@@ -8,7 +8,7 @@ editor: visual
 
 This is an individual assignment. Turn in this assignment as an HTML or PDF file to ELMS. Make sure to include the R Markdown or Quarto file that was used to generate it. Include the GitHub link for the repository containing these files.
 
-GitHub Link: 
+GitHub Link: https://github.com/Zackwin73/Assignment_4
 
 ```{r}
 #| include: false 
@@ -78,7 +78,6 @@ ORDER BY num_arrests DESC
 
 ```
 
-
 We can also use the `date` for grouping. Count the number of arrests grouped by hour of the day in 2016. You can extract the latter information from `date` via `EXTRACT(HOUR FROM date)`. Which time of the day is associated with the most arrests?
 
 ```{sql connection=con}
@@ -93,9 +92,6 @@ GROUP BY hour
 ORDER BY hour ASC
 ```
 
-
-
-
 Focus only on `HOMICIDE` and count the number of arrests for this incident type, grouped by year. List the results in descending order.
 
 ```{sql connection=con}
@@ -108,7 +104,6 @@ WHERE primary_type = 'HOMICIDE'
 GROUP BY year
 ORDER BY year DESC
 ```
-
 
 Find out which districts have the highest numbers of arrests in 2015 and 2016. That is, count the number of arrests in 2015 and 2016, grouped by year and district. List the results in descending order.
 
@@ -123,7 +118,6 @@ WHERE year IN (2015, 2016)
 GROUP BY year, district
 ORDER BY num_arrests DESC
 ```
-
 
 Lets switch to writing queries from within R via the `DBI` package. Create a query object that counts the number of arrests grouped by `primary_type` of district 11 in year 2016. The results should be displayed in descending order.
 
@@ -156,7 +150,6 @@ head(arrests_d11_2016)
 
 ```
 
-
 Try to write the very same query, now using the `dbplyr` package. For this, you need to first map the `crime` table to a tibble object in R.
 
 ```{r}
@@ -175,7 +168,6 @@ arrests_d11_2016_dbplyr <- crime_tbl %>%
 # Display the first few rows
 arrests_d11_2016_dbplyr %>% head()
 ```
-
 
 Again, count the number of arrests grouped by `primary_type` of district 11 in year 2016, now using `dplyr` syntax.
 
@@ -212,20 +204,19 @@ arrests_d11_yearly_query <- crime_tbl %>%
 
 ```
 
-
 Assign the results of the query above to a local R object.
+
 ```{r}
 arrests_d11_yearly <- arrests_d11_yearly_query %>% collect()
 ```
 
-
 Confirm that you pulled the data to the local environment by displaying the first ten rows of the saved data set.
+
 ```{r}
 # Display the first ten rows of the locally saved data set
 head(arrests_d11_yearly, 10)
 
 ```
-
 
 Close the connection.
 
