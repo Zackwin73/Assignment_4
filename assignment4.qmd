@@ -89,9 +89,11 @@ FROM crime
 WHERE year = 2016
   AND arrest = TRUE
 GROUP BY hour
-ORDER BY hour ASC
+ORDER BY num_arrests DESC
 
 ```
+Eight pm was the time of day was associated with the most arrests.
+
 
 Focus only on `HOMICIDE` and count the number of arrests for this incident type, grouped by year. List the results in descending order.
 
