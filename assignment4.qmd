@@ -90,33 +90,36 @@ WHERE year = 2016
   AND arrest = TRUE
 GROUP BY hour
 ORDER BY hour ASC
+
 ```
 
 Focus only on `HOMICIDE` and count the number of arrests for this incident type, grouped by year. List the results in descending order.
 
 ```{sql connection=con}
-SELECT 
+SELECT
   year,
   COUNT(*) AS num_arrests
 FROM crime
 WHERE primary_type = 'HOMICIDE'
   AND arrest = TRUE
 GROUP BY year
-ORDER BY year DESC
+ORDER BY num_arrests DESC
 ```
 
 Find out which districts have the highest numbers of arrests in 2015 and 2016. That is, count the number of arrests in 2015 and 2016, grouped by year and district. List the results in descending order.
 
 ```{sql connection=con}
 SELECT 
-  year,
   district,
-  COUNT(*) AS num_arrests
+  year,
+  COUNT(*) AS arrests
 FROM crime
 WHERE year IN (2015, 2016)
   AND arrest = TRUE
-GROUP BY year, district
-ORDER BY num_arrests DESC
+GROUP BY district, year
+ORDER BY SUM(COUNT(*)) OVER (PARTITION BY district) DESC, district, year;
+
+
 ```
 
 Lets switch to writing queries from within R via the `DBI` package. Create a query object that counts the number of arrests grouped by `primary_type` of district 11 in year 2016. The results should be displayed in descending order.
@@ -141,10 +144,8 @@ query <- "
   ORDER BY num_arrests DESC
 "
 
-# Run the query and save results
 arrests_d11_2016 <- dbGetQuery(con, query)
 
-# Display top rows
 head(arrests_d11_2016)
 
 
@@ -153,10 +154,8 @@ head(arrests_d11_2016)
 Try to write the very same query, now using the `dbplyr` package. For this, you need to first map the `crime` table to a tibble object in R.
 
 ```{r}
-# Map the 'crime' table from BigQuery to a lazy tibble
 crime_tbl <- tbl(con, "crime")
 
-# Use dplyr/dbplyr syntax to build the same query
 arrests_d11_2016_dbplyr <- crime_tbl %>%
   filter(year == 2016,
          district == 11,
@@ -165,14 +164,12 @@ arrests_d11_2016_dbplyr <- crime_tbl %>%
   summarise(num_arrests = n()) %>%
   arrange(desc(num_arrests))
 
-# Display the first few rows
 arrests_d11_2016_dbplyr %>% head()
 ```
 
 Again, count the number of arrests grouped by `primary_type` of district 11 in year 2016, now using `dplyr` syntax.
 
 ```{r}
-library(dplyr)
 
 crime_local <- crime_tbl %>%
   filter(year == 2016, district == 11) %>%
@@ -201,7 +198,6 @@ arrests_d11_yearly_query <- crime_tbl %>%
   summarise(num_arrests = n()) %>%
   arrange(year)
 
-
 ```
 
 Assign the results of the query above to a local R object.
@@ -213,7 +209,6 @@ arrests_d11_yearly <- arrests_d11_yearly_query %>% collect()
 Confirm that you pulled the data to the local environment by displaying the first ten rows of the saved data set.
 
 ```{r}
-# Display the first ten rows of the locally saved data set
 head(arrests_d11_yearly, 10)
 
 ```
