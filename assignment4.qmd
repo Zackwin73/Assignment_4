@@ -92,7 +92,7 @@ GROUP BY hour
 ORDER BY num_arrests DESC
 
 ```
-Eight pm was the time of day was associated with the most arrests.
+**Eight pm was the time of day associated with the most arrests.**
 
 
 Focus only on `HOMICIDE` and count the number of arrests for this incident type, grouped by year. List the results in descending order.
